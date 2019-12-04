@@ -27,7 +27,7 @@ fn calc_fuel_part_1() {
     assert_eq!(_fuel(12), 2);
     assert_eq!(_fuel(14), 2);
     assert_eq!(_fuel(1969), 654);
-    assert_eq!(_fuel(100756), 33583);
+    assert_eq!(_fuel(100_756), 33583);
 }
 
 #[test]
@@ -35,5 +35,5 @@ fn calc_fuel_part_2() {
     assert_eq!(fuel(12), 2);
     assert_eq!(fuel(14), 2);
     assert_eq!(fuel(1969), 966);
-    assert_eq!(fuel(100756), 50346);
+    assert_eq!(fuel(100_756), 50346);
 }

@@ -41,7 +41,7 @@ pub fn part_2() -> usize {
 
     for i in 0..=99 {
         for j in 0..=99 {
-            if run_with(&mut codes.clone(), i, j) == 19690720 {
+            if run_with(&mut codes.clone(), i, j) == 19_690_720 {
                 noun = i;
                 verb = j;
                 break;
@@ -73,7 +73,7 @@ fn test_run() {
 
 #[test]
 fn test_part_1() {
-    assert_eq!(part_1(), 4138658);
+    assert_eq!(part_1(), 4_138_658);
 }
 
 #[test]
