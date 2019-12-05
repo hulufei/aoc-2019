@@ -14,76 +14,71 @@ fn run_instructions_at(instructions: &mut [isize], start: usize) -> Vec<isize> {
     let mut ans = vec![];
     let mut pointer = start;
     loop {
-        match instructions[pointer] {
+        let instruction_head = instructions[pointer];
+        let opcode = instruction_head % 100;
+        let first_param_mod = instruction_head / 100 % 10;
+        let second_param_mod = instruction_head / 1000 % 10;
+        let get_value = |pointer: usize, param_mod| match param_mod {
+            0 => instructions[instructions[pointer] as usize],
+            1 => instructions[pointer],
+            _ => panic!("Invalid parameter at {} with mode {}", pointer, param_mod),
+        };
+        match opcode {
             99 => break,
-            instruction_head => {
-                let opcode = instruction_head % 100;
-                let first_param_mod = instruction_head / 100 % 10;
-                let second_param_mod = instruction_head / 1000 % 10;
-                let get_value = |pointer: usize, param_mod| match param_mod {
-                    0 => instructions[instructions[pointer] as usize],
-                    1 => instructions[pointer],
-                    _ => panic!("Invalid parameter at {} with mode {}", pointer, param_mod),
-                };
-                match opcode {
-                    1 => {
-                        // Parameters that an instruction writes to will never be in immediate mode.
-                        instructions[get_value(pointer + 3, 1) as usize] =
-                            get_value(pointer + 1, first_param_mod)
-                                + get_value(pointer + 2, second_param_mod);
-                        pointer += 4;
-                    }
-                    2 => {
-                        instructions[get_value(pointer + 3, 1) as usize] =
-                            get_value(pointer + 1, first_param_mod)
-                                * get_value(pointer + 2, second_param_mod);
-                        pointer += 4;
-                    }
-                    4 => {
-                        ans.push(get_value(pointer + 1, first_param_mod));
-                        pointer += 2;
-                    }
-                    5 => {
-                        let first_param = get_value(pointer + 1, first_param_mod);
-                        let second_param = get_value(pointer + 2, second_param_mod);
-                        if first_param != 0 {
-                            pointer = second_param as usize;
-                        } else {
-                            pointer += 3;
-                        }
-                    }
-                    6 => {
-                        let first_param = get_value(pointer + 1, first_param_mod);
-                        let second_param = get_value(pointer + 2, second_param_mod);
-                        if first_param == 0 {
-                            pointer = second_param as usize;
-                        } else {
-                            pointer += 3;
-                        }
-                    }
-                    7 => {
-                        let first_param = get_value(pointer + 1, first_param_mod);
-                        let second_param = get_value(pointer + 2, second_param_mod);
-                        let write_pointer = get_value(pointer + 3, 1) as usize;
-                        instructions[write_pointer] =
-                            if first_param < second_param { 1 } else { 0 };
-                        pointer += 4;
-                    }
-                    8 => {
-                        let first_param = get_value(pointer + 1, first_param_mod);
-                        let second_param = get_value(pointer + 2, second_param_mod);
-                        let write_pointer = get_value(pointer + 3, 1) as usize;
-                        instructions[write_pointer] =
-                            if first_param == second_param { 1 } else { 0 };
-                        pointer += 4;
-                    }
-                    _ => panic!(
-                        "Invalid opcode {}, instruction_head = {}",
-                        opcode, instruction_head
-                    ),
-                };
+            1 => {
+                // Parameters that an instruction writes to will never be in immediate mode.
+                instructions[get_value(pointer + 3, 1) as usize] =
+                    get_value(pointer + 1, first_param_mod)
+                        + get_value(pointer + 2, second_param_mod);
+                pointer += 4;
             }
-        }
+            2 => {
+                instructions[get_value(pointer + 3, 1) as usize] =
+                    get_value(pointer + 1, first_param_mod)
+                        * get_value(pointer + 2, second_param_mod);
+                pointer += 4;
+            }
+            4 => {
+                ans.push(get_value(pointer + 1, first_param_mod));
+                pointer += 2;
+            }
+            5 => {
+                let first_param = get_value(pointer + 1, first_param_mod);
+                let second_param = get_value(pointer + 2, second_param_mod);
+                if first_param != 0 {
+                    pointer = second_param as usize;
+                } else {
+                    pointer += 3;
+                }
+            }
+            6 => {
+                let first_param = get_value(pointer + 1, first_param_mod);
+                let second_param = get_value(pointer + 2, second_param_mod);
+                if first_param == 0 {
+                    pointer = second_param as usize;
+                } else {
+                    pointer += 3;
+                }
+            }
+            7 => {
+                let first_param = get_value(pointer + 1, first_param_mod);
+                let second_param = get_value(pointer + 2, second_param_mod);
+                let write_pointer = get_value(pointer + 3, 1) as usize;
+                instructions[write_pointer] = if first_param < second_param { 1 } else { 0 };
+                pointer += 4;
+            }
+            8 => {
+                let first_param = get_value(pointer + 1, first_param_mod);
+                let second_param = get_value(pointer + 2, second_param_mod);
+                let write_pointer = get_value(pointer + 3, 1) as usize;
+                instructions[write_pointer] = if first_param == second_param { 1 } else { 0 };
+                pointer += 4;
+            }
+            _ => panic!(
+                "Invalid opcode {}, instruction_head = {}",
+                opcode, instruction_head
+            ),
+        };
     }
     ans
 }
