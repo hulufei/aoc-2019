@@ -4,6 +4,7 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
 fn main() {
     let solution = env::args().nth(1).unwrap_or_default();
@@ -16,6 +17,7 @@ fn main() {
         Ok(32) => println!("{:?}", day3::part_2()),
         Ok(41) => println!("{:?}", day4::part_1()),
         Ok(42) => println!("{:?}", day4::part_2()),
+        Ok(51) => println!("{:?}", day5::part_1()),
         _ => panic!("Invalid pick"),
     }
 }
