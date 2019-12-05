@@ -12,34 +12,36 @@ fn run(input: &mut [isize]) -> Vec<isize> {
 
 fn run_instructions(input: &mut [isize], start: usize) -> Vec<isize> {
     let mut ans = vec![];
-    let mut pos = start;
+    let mut pointer = start;
     loop {
-        match input[pos] {
+        match input[pointer] {
             99 => break,
             instruction_head => {
                 let opcode = instruction_head % 100;
                 let first_param_mod = instruction_head / 100 % 10;
                 let second_param_mod = instruction_head / 1000 % 10;
-                let get_value = |pos: usize, param_mod| match param_mod {
-                    0 => input[input[pos] as usize],
-                    1 => input[pos],
-                    _ => panic!("Invalid parameter at {} with mode {}", pos, param_mod),
+                let get_value = |pointer: usize, param_mod| match param_mod {
+                    0 => input[input[pointer] as usize],
+                    1 => input[pointer],
+                    _ => panic!("Invalid parameter at {} with mode {}", pointer, param_mod),
                 };
                 match opcode {
                     1 => {
                         // Parameters that an instruction writes to will never be in immediate mode.
-                        input[get_value(pos + 3, 1) as usize] = get_value(pos + 1, first_param_mod)
-                            + get_value(pos + 2, second_param_mod);
-                        pos += 4;
+                        input[get_value(pointer + 3, 1) as usize] =
+                            get_value(pointer + 1, first_param_mod)
+                                + get_value(pointer + 2, second_param_mod);
+                        pointer += 4;
                     }
                     2 => {
-                        input[get_value(pos + 3, 1) as usize] = get_value(pos + 1, first_param_mod)
-                            * get_value(pos + 2, second_param_mod);
-                        pos += 4;
+                        input[get_value(pointer + 3, 1) as usize] =
+                            get_value(pointer + 1, first_param_mod)
+                                * get_value(pointer + 2, second_param_mod);
+                        pointer += 4;
                     }
                     4 => {
-                        ans.push(get_value(pos + 1, first_param_mod));
-                        pos += 2;
+                        ans.push(get_value(pointer + 1, first_param_mod));
+                        pointer += 2;
                     }
                     _ => panic!(
                         "Invalid opcode {}, instruction_head = {}",
