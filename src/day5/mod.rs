@@ -1,3 +1,4 @@
+// NOTE: include_str! will append new line in the end always
 const INPUT: &str = include_str!("./input");
 
 fn run(instructions: &mut [isize], input: isize) -> Vec<isize> {
@@ -95,8 +96,10 @@ pub fn part_1() -> Option<isize> {
 
 pub fn part_2() -> Option<isize> {
     let mut instructions: Vec<isize> = INPUT
+        .trim()
         .split(',')
-        .filter_map(|v| v.parse::<isize>().ok())
+        // use unwrap to panic on error
+        .map(|v| v.parse::<isize>().unwrap())
         .collect();
     let outputs = run(&mut instructions, 5);
 
@@ -116,9 +119,8 @@ fn test_part_1() {
 }
 
 #[test]
-#[ignore]
 fn test_part_2() {
-    assert_eq!(part_2(), Some(0));
+    assert_eq!(part_2(), Some(15586959));
 }
 
 #[test]
