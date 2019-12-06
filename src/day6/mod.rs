@@ -2,13 +2,18 @@ use std::collections::{HashMap, HashSet};
 
 const INPUT: &str = include_str!("./input");
 
-type OrbitMap<'a> = HashMap<&'a str, HashSet<&'a str>>;
+type Parent<'a> = &'a str;
+type OrbitMap<'a> = HashMap<&'a str, (Parent<'a>, HashSet<&'a str>)>;
 
 pub fn part_1() -> usize {
     total_orbits(INPUT)
 }
 
-fn total_orbits(input: &str) -> usize {
+pub fn part_2() -> usize {
+    minimum_transfers(INPUT)
+}
+
+fn gen_orbits(input: &str) -> OrbitMap {
     let mut orbits: OrbitMap = HashMap::new();
 
     for line in input.lines() {
@@ -16,18 +21,26 @@ fn total_orbits(input: &str) -> usize {
         let central = parts[0];
         let follower = parts[1];
 
-        orbits
-            .entry(central)
-            .or_insert_with(HashSet::new)
-            .insert(follower);
+        // Unknown parent yet
+        let (_, followers) = orbits.entry(central).or_insert(("", HashSet::new()));
+        followers.insert(follower);
+        // Set unknown parent
+        let (parent, _) = orbits.entry(follower).or_insert((central, HashSet::new()));
+        *parent = central;
     }
+
+    orbits
+}
+
+fn total_orbits(input: &str) -> usize {
+    let orbits: OrbitMap = gen_orbits(input);
 
     walk_down_count(&orbits, "COM", 0)
 }
 
 fn walk_down_count(orbits: &OrbitMap, central: &str, level: usize) -> usize {
     match orbits.get(central) {
-        Some(followers) => {
+        Some((_, followers)) => {
             followers.len() * (1 + level)
                 + followers
                     .iter()
@@ -36,6 +49,33 @@ fn walk_down_count(orbits: &OrbitMap, central: &str, level: usize) -> usize {
         }
         None => 0,
     }
+}
+
+fn get_parents(orbits: &OrbitMap, obj: &str) -> Vec<String> {
+    let mut central = obj;
+    let mut ret = vec![];
+    loop {
+        match (central, orbits.get(central)) {
+            ("COM", _) => break,
+            (_, Some((parent, _))) => {
+                ret.push(parent.to_string());
+                central = parent;
+            }
+            _ => (),
+        }
+    }
+    ret
+}
+
+fn minimum_transfers(input: &str) -> usize {
+    let orbits = gen_orbits(input);
+
+    get_parents(&orbits, "YOU")
+        .iter()
+        .collect::<HashSet<_>>()
+        .symmetric_difference(&get_parents(&orbits, "SAN").iter().collect())
+        .collect::<HashSet<_>>()
+        .len()
 }
 
 #[test]
@@ -52,4 +92,22 @@ E)J
 J)K
 K)L";
     assert_eq!(total_orbits(input), 42);
+}
+
+#[test]
+fn test_minimum_transfers() {
+    let input = r"COM)B
+B)C
+C)D
+D)E
+E)F
+B)G
+G)H
+D)I
+E)J
+J)K
+K)L
+K)YOU
+I)SAN";
+    assert_eq!(minimum_transfers(input), 4);
 }
