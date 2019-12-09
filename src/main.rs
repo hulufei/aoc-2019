@@ -31,6 +31,7 @@ fn main() {
         Ok(81) => println!("{:?}", day8::part_1()),
         Ok(82) => println!("{}", day8::part_2()),
         Ok(91) => println!("{:?}", day9::part_1()),
+        Ok(92) => println!("{:?}", day9::part_2()),
         _ => panic!("Invalid pick"),
     }
 }

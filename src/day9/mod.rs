@@ -11,3 +11,13 @@ pub fn part_1() -> isize {
         Action::Halt => panic!("No output"),
     }
 }
+
+pub fn part_2() -> isize {
+    let program = intcode_parser(INPUT.trim());
+    let mut machine = Machine::with_capacity(&program, 2000);
+    machine.push_input(2);
+    match machine.run() {
+        Action::Output(v) => v,
+        Action::Halt => panic!("No output"),
+    }
+}
