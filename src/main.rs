@@ -8,6 +8,7 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 mod intcode;
 
 fn main() {
@@ -29,6 +30,7 @@ fn main() {
         Ok(72) => println!("{:?}", day7::part_2()),
         Ok(81) => println!("{:?}", day8::part_1()),
         Ok(82) => println!("{}", day8::part_2()),
+        Ok(91) => println!("{:?}", day9::part_1()),
         _ => panic!("Invalid pick"),
     }
 }
