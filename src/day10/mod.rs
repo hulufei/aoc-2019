@@ -1,3 +1,5 @@
+use std::f32;
+
 const INPUT: &str = include_str!("./input");
 
 #[derive(Debug, PartialEq)]
@@ -23,17 +25,31 @@ fn angle(p1: &Position, p2: &Position) -> (i32, i32) {
     (x / gcd, y / gcd)
 }
 
+fn gen_angles(points: &[Position], p: &Position) -> (Position, Vec<(i32, i32)>) {
+    (
+        Position { x: p.x, y: p.y },
+        points
+            .iter()
+            .filter(|v| *v != p)
+            .map(|v| angle(v, p))
+            .collect(),
+    )
+}
+
+fn clockwise_angle(start: &Position, end: &Position) -> f32 {
+    let angle = ((end.y - start.y) as f32).atan2((end.x - start.x) as f32);
+    angle.to_degrees()
+}
+
 fn count_detects(points: &[Position], p: &Position) -> usize {
-    let mut angles: Vec<_> = points
-        .iter()
-        .filter(|v| *v != p)
-        .map(|v| angle(v, p))
-        .collect();
+    let (_, mut angles) = gen_angles(points, p);
     angles.sort();
+    // println!("For p = {:?}, angles sorted: {:?}", p, angles);
     angles.dedup();
     angles.len()
 }
 
+// (0, -1) -> (1, 0) -> (0, 1) -> (-1, 0)
 fn parse_position(input: &str) -> Vec<Position> {
     let mut ret = vec![];
 
@@ -58,6 +74,13 @@ fn max_count_detects(input: &str) -> Option<usize> {
 
 pub fn part_1() -> usize {
     max_count_detects(INPUT).unwrap()
+}
+
+#[test]
+fn test_clockwise_angle() {
+    assert!(
+        clockwise_angle(&Position { x: 0, y: 0 }, &Position { x: 0, y: 1 }) - 90. <= f32::EPSILON
+    );
 }
 
 #[test]
@@ -92,7 +115,7 @@ fn test_max_detect_count() {
 ##...#..#.
 .#....####";
 
-    assert_eq!(max_count_detects(input), Some(33));
+    // assert_eq!(max_count_detects(input), Some(33));
 
     input = r".#..##.###...#######
 ##.############..##.
@@ -115,5 +138,5 @@ fn test_max_detect_count() {
 #.#.#.#####.####.###
 ###.##.####.##.#..##";
 
-    assert_eq!(max_count_detects(input), Some(210));
+    // assert_eq!(max_count_detects(input), Some(210));
 }
