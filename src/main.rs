@@ -1,6 +1,7 @@
 use std::env;
 
 mod day1;
+mod day10;
 mod day2;
 mod day3;
 mod day4;
@@ -32,6 +33,7 @@ fn main() {
         Ok(82) => println!("{}", day8::part_2()),
         Ok(91) => println!("{:?}", day9::part_1()),
         Ok(92) => println!("{:?}", day9::part_2()),
+        Ok(101) => println!("{:?}", day10::part_1()),
         _ => panic!("Invalid pick"),
     }
 }
