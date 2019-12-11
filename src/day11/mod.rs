@@ -13,13 +13,13 @@ struct Grid {
 }
 
 impl Grid {
-    fn new(program: &str) -> Self {
+    fn new(program: &str, start_color: Color) -> Self {
         let mut panels = HashMap::new();
         let start = (0, 0);
         let program = intcode_parser(program);
         let mut machine = Machine::with_capacity(&program, 2000);
 
-        machine.push_input(Black as isize);
+        machine.push_input(start_color as isize);
         panels.insert(start, Black);
 
         Grid {
@@ -105,7 +105,27 @@ enum Direction {
 }
 
 pub fn part_1() -> usize {
-    let mut grid = Grid::new(INPUT.trim());
+    let mut grid = Grid::new(INPUT.trim(), Black);
     grid.run();
     grid.panels.keys().len()
+}
+
+pub fn part_2() {
+    let mut grid = Grid::new(INPUT.trim(), White);
+    grid.run();
+    let coords = grid.panels.keys();
+    let min_x = coords.clone().min_by_key(|k| k.0).unwrap().0;
+    let max_x = coords.clone().max_by_key(|k| k.0).unwrap().0;
+    let min_y = coords.clone().min_by_key(|k| k.1).unwrap().1;
+    let max_y = coords.clone().max_by_key(|k| k.1).unwrap().1;
+    for y in (min_y..=max_y).rev() {
+        for x in min_x..=max_x {
+            let color = match grid.panels.get(&(x, y)) {
+                Some(White) => "⬜️",
+                _ => "⬛️",
+            };
+            print!("{}", color);
+        }
+        println!();
+    }
 }
