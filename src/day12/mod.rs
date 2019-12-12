@@ -30,19 +30,20 @@ fn gen_velocity(moons: &[Position]) -> Vec<Velocity> {
         .collect()
 }
 
-fn apply_velocity(p: &[Position], v: &[Velocity]) -> Vec<Position> {
-    p.iter()
-        .zip(v)
-        .map(|(p, v)| (p.0 + v.0, p.1 + v.1, p.2 + v.2))
-        .collect()
+fn apply_velocity(p: &mut [Position], v: &[Velocity]) {
+    for (p, v) in p.iter_mut().zip(v) {
+        p.0 += v.0;
+        p.1 += v.1;
+        p.2 += v.2;
+    }
 }
 
 fn energy_after_steps(moons: &[Position], steps: usize) -> i32 {
     let mut velocity: Vec<Velocity> = std::iter::repeat((0, 0, 0)).take(moons.len()).collect();
     let mut positions: Vec<Position> = moons.to_vec();
     for _ in 0..steps {
-        velocity = apply_velocity(&velocity, &gen_velocity(&positions));
-        positions = apply_velocity(&positions, &velocity);
+        apply_velocity(&mut velocity, &gen_velocity(&positions));
+        apply_velocity(&mut positions, &velocity);
     }
     positions
         .iter()
