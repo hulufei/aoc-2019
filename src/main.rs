@@ -4,6 +4,7 @@ mod day1;
 mod day10;
 mod day11;
 mod day12;
+mod day13;
 mod day2;
 mod day3;
 mod day4;
@@ -40,6 +41,7 @@ fn main() {
         Ok(111) => println!("{:?}", day11::part_1()),
         Ok(112) => day11::part_2(),
         Ok(121) => println!("{:?}", day12::part_1()),
+        Ok(131) => println!("{:?}", day13::part_1()),
         _ => panic!("Invalid pick"),
     }
 }
